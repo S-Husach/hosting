@@ -3575,20 +3575,20 @@ __webpack_require__.r(__webpack_exports__);
   props: ["user"],
   data: function data() {
     return {
-      sshKey: [],
-      name: [],
+      sshKey: '',
+      sshName: '',
       sshData: []
     };
   },
   methods: {
     submitForm: function submitForm() {
-      this.sshData = [this.name, this.sshKey];
-      console.log(this.sshData);
-      axios.post("/addssh", this.sshKey).then(function (response) {
-        console.log("new vote added");
+      var ssh = [this.sshName, this.sshKey]; //console.log(ssh)
+
+      axios.post("/addssh", ssh).then(function (response) {//console.log(ssh);
       })["catch"](function (error) {
         return console.log("axios error", error);
       });
+      location.reload();
     }
   }
 });
@@ -3634,7 +3634,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 
 
 
@@ -3652,53 +3651,21 @@ __webpack_require__.r(__webpack_exports__);
     JetLabel: _Jetstream_Label__WEBPACK_IMPORTED_MODULE_4__["default"],
     JetSecondaryButton: _Jetstream_SecondaryButton__WEBPACK_IMPORTED_MODULE_6__["default"]
   },
-  props: ['user'],
   data: function data() {
     return {
-      form: this.$inertia.form({
-        '_method': 'PUT',
-        name: this.user.name,
-        email: this.user.email,
-        photo: null
-      }, {
-        bag: 'updateProfileInformation',
-        resetOnSuccess: false
-      }),
-      photoPreview: null
+      token: ''
     };
   },
   methods: {
-    updateProfileInformation: function updateProfileInformation() {
-      if (this.$refs.photo) {
-        this.form.photo = this.$refs.photo.files[0];
-      }
-
-      this.form.post(route('user-profile-information.update'), {
-        preserveScroll: true
+    submitForm: function submitForm() {
+      var token = [this.token];
+      console.log(this.token);
+      axios.post("/add-token", token).then(function (response) {
+        console.log('then', token);
+      })["catch"](function (error) {
+        return console.log("axios error", error);
       });
-    },
-    selectNewPhoto: function selectNewPhoto() {
-      this.$refs.photo.click();
-    },
-    updatePhotoPreview: function updatePhotoPreview() {
-      var _this = this;
-
-      var reader = new FileReader();
-
-      reader.onload = function (e) {
-        _this.photoPreview = e.target.result;
-      };
-
-      reader.readAsDataURL(this.$refs.photo.files[0]);
-    },
-    deletePhoto: function deletePhoto() {
-      var _this2 = this;
-
-      this.$inertia["delete"](route('current-user-photo.destroy'), {
-        preserveScroll: true
-      }).then(function () {
-        _this2.photoPreview = null;
-      });
+      location.reload();
     }
   }
 });
@@ -3752,7 +3719,6 @@ __webpack_require__.r(__webpack_exports__);
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ["sessions"],
   components: {
     Sidebar: _Sidebar__WEBPACK_IMPORTED_MODULE_1__["default"],
     AppLayout: _Layouts_AppLayout__WEBPACK_IMPORTED_MODULE_0__["default"],
@@ -3764,6 +3730,27 @@ __webpack_require__.r(__webpack_exports__);
     UpdateProfileInformationForm: _UpdateProfileInformationForm__WEBPACK_IMPORTED_MODULE_7__["default"],
     AddTokenForm: _AddTokenForm__WEBPACK_IMPORTED_MODULE_8__["default"],
     TokenEditForm: _TokenEditForm__WEBPACK_IMPORTED_MODULE_9__["default"]
+  },
+  mounted: function mounted() {
+    this.getToken();
+  },
+  data: function data() {
+    return {
+      token: ''
+    };
+  },
+  methods: {
+    getToken: function getToken() {
+      var _this = this;
+
+      axios.get("/token").then(function (response) {
+        var token = response.data;
+        _this.token = token;
+        console.log('token', token);
+      })["catch"](function (error) {
+        return console.log(error);
+      });
+    }
   }
 });
 
@@ -4219,12 +4206,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
 
 
 
@@ -4244,9 +4225,34 @@ __webpack_require__.r(__webpack_exports__);
   },
   props: ["user"],
   data: function data() {
-    return {};
+    return {
+      keys: []
+    };
   },
-  methods: {}
+  mounted: function mounted() {
+    this.getKeys();
+  },
+  methods: {
+    getKeys: function getKeys() {
+      var _this = this;
+
+      axios.get("/keys").then(function (response) {
+        var keys = response.data;
+        _this.keys = keys;
+        console.log('keys', keys);
+      })["catch"](function (error) {
+        return console.log(error);
+      });
+    },
+    softDelete: function softDelete(index) {
+      axios.get('/delete' + index).then(function (response) {
+        console.log(index);
+      })["catch"](function (error) {
+        return console.log(error);
+      });
+      location.reload();
+    }
+  }
 });
 
 /***/ }),
@@ -4300,6 +4306,37 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -4317,53 +4354,48 @@ __webpack_require__.r(__webpack_exports__);
     JetLabel: _Jetstream_Label__WEBPACK_IMPORTED_MODULE_4__["default"],
     JetSecondaryButton: _Jetstream_SecondaryButton__WEBPACK_IMPORTED_MODULE_6__["default"]
   },
-  props: ["user"],
+  mounted: function mounted() {
+    this.getToken();
+  },
   data: function data() {
     return {
-      form: this.$inertia.form({
-        _method: "PUT",
-        name: this.user.name,
-        email: this.user.email,
-        photo: null
-      }, {
-        bag: "updateProfileInformation",
-        resetOnSuccess: false
-      }),
-      photoPreview: null
+      showEditToken: false,
+      token: '',
+      newToken: ''
     };
   },
   methods: {
-    updateProfileInformation: function updateProfileInformation() {
-      if (this.$refs.photo) {
-        this.form.photo = this.$refs.photo.files[0];
-      }
-
-      this.form.post(route("user-profile-information.update"), {
-        preserveScroll: true
-      });
-    },
-    selectNewPhoto: function selectNewPhoto() {
-      this.$refs.photo.click();
-    },
-    updatePhotoPreview: function updatePhotoPreview() {
+    getToken: function getToken() {
       var _this = this;
 
-      var reader = new FileReader();
-
-      reader.onload = function (e) {
-        _this.photoPreview = e.target.result;
-      };
-
-      reader.readAsDataURL(this.$refs.photo.files[0]);
-    },
-    deletePhoto: function deletePhoto() {
-      var _this2 = this;
-
-      this.$inertia["delete"](route("current-user-photo.destroy"), {
-        preserveScroll: true
-      }).then(function () {
-        _this2.photoPreview = null;
+      axios.get("/token").then(function (response) {
+        var token = response.data;
+        _this.token = token;
+        console.log("token from edit", token);
+      })["catch"](function (error) {
+        return console.log(error);
       });
+    },
+    softDelete: function softDelete(index) {
+      axios.get("/token-delete" + index).then(function (response) {
+        console.log(index);
+      })["catch"](function (error) {
+        return console.log(error);
+      });
+      location.reload();
+    },
+    editToken: function editToken() {
+      this.showEditToken = !this.showEditToken;
+    },
+    saveNewToken: function saveNewToken(index) {
+      var newToken = [this.newToken];
+      console.log(newToken);
+      axios.post("/token-new" + index, newToken).then(function (response) {
+        console.log(newToken);
+      })["catch"](function (error) {
+        return console.log("axios error", error);
+      });
+      location.reload();
     }
   }
 });
@@ -27462,11 +27494,11 @@ var render = function() {
             staticClass: "mt-1 block w-full",
             attrs: { id: "name", type: "text" },
             model: {
-              value: _vm.name,
+              value: _vm.sshName,
               callback: function($$v) {
-                _vm.name = $$v
+                _vm.sshName = $$v
               },
-              expression: "name"
+              expression: "sshName"
             }
           })
         ],
@@ -27546,45 +27578,53 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("jet-form-section", {
-    on: { submitted: _vm.updateProfileInformation },
-    scopedSlots: _vm._u([
+  return _c("div", [
+    _c("form", [
+      _vm._m(0),
+      _vm._v(" "),
+      _c(
+        "div",
+        { staticClass: "col-span-6 sm:col-span-4" },
+        [
+          _c("jet-label", { attrs: { value: "Token" } }),
+          _vm._v(" "),
+          _c("jet-input", {
+            staticClass: "mt-1 mb-10 block w-full",
+            attrs: { type: "text" },
+            model: {
+              value: _vm.token,
+              callback: function($$v) {
+                _vm.token = $$v
+              },
+              expression: "token"
+            }
+          })
+        ],
+        1
+      )
+    ]),
+    _vm._v(" "),
+    _c(
+      "button",
       {
-        key: "form",
-        fn: function() {
-          return [
-            _c("div", { staticClass: "col-span-6 sm:col-span-5" }, [
-              _c("h1", [_vm._v("Add Digital Ocean Account Token")])
-            ]),
-            _vm._v(" "),
-            _c(
-              "div",
-              { staticClass: "col-span-6 sm:col-span-4" },
-              [
-                _c("jet-label", { attrs: { for: "name", value: "Token" } }),
-                _vm._v(" "),
-                _c("jet-input", {
-                  staticClass: "mt-1 block w-full",
-                  attrs: { id: "name", type: "text", autocomplete: "name" }
-                })
-              ],
-              1
-            )
-          ]
-        },
-        proxy: true
+        staticClass: "btn btn-secondary",
+        attrs: { type: "button" },
+        on: { click: _vm.submitForm }
       },
-      {
-        key: "actions",
-        fn: function() {
-          return [_c("jet-button", [_vm._v("\n            Create\n        ")])]
-        },
-        proxy: true
-      }
-    ])
-  })
+      [_vm._v("\n    Create\n  ")]
+    )
+  ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col-span-6 sm:col-span-5" }, [
+      _c("h1", [_vm._v("Add Digital Ocean Account Token")])
+    ])
+  }
+]
 render._withStripped = true
 
 
@@ -27635,19 +27675,26 @@ var render = function() {
         [
           _c("sidebar"),
           _vm._v(" "),
-          _c(
-            "div",
-            { staticClass: "max-w-7xl mx-auto py-10 sm:px-6 lg:px-8" },
-            [_c("add-token-form")],
-            1
-          ),
+          !_vm.token.length
+            ? _c(
+                "div",
+                { staticClass: "max-w-7xl mx-auto py-10 sm:px-6 lg:px-8" },
+                [_c("add-token-form")],
+                1
+              )
+            : _vm._e(),
           _vm._v(" "),
-          _c(
-            "div",
-            { staticClass: "max-w-7xl mx-auto py-10 sm:px-6 lg:px-8" },
-            [_c("token-edit-form")],
-            1
-          )
+          _vm.token.length
+            ? _c(
+                "div",
+                {
+                  staticClass: "max-w-7xl mx-auto py-10 sm:px-6 lg:px-8",
+                  attrs: { token: _vm.token }
+                },
+                [_c("token-edit-form")],
+                1
+              )
+            : _vm._e()
         ],
         1
       )
@@ -28451,37 +28498,31 @@ var render = function() {
                   ])
                 ]),
                 _vm._v(" "),
-                _c("tbody", [
-                  _c("tr", [
-                    _c("td", [_vm._v("dfgdf")]),
-                    _vm._v(" "),
-                    _c("td", [
-                      _c(
-                        "button",
-                        {
-                          staticClass: "btn btn-secondary",
-                          attrs: { type: "button" }
-                        },
-                        [_vm._v("x")]
-                      )
+                _c(
+                  "tbody",
+                  _vm._l(_vm.keys, function(key, index) {
+                    return _c("tr", { key: index }, [
+                      _c("td", [_vm._v(_vm._s(key.name))]),
+                      _vm._v(" "),
+                      _c("td", [
+                        _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-secondary",
+                            attrs: { type: "button" },
+                            on: {
+                              click: function($event) {
+                                return _vm.softDelete(key.id)
+                              }
+                            }
+                          },
+                          [_vm._v("x")]
+                        )
+                      ])
                     ])
-                  ]),
-                  _vm._v(" "),
-                  _c("tr", [
-                    _c("td", [_vm._v("ghrdsw")]),
-                    _vm._v(" "),
-                    _c("td", [
-                      _c(
-                        "button",
-                        {
-                          staticClass: "btn btn-secondary",
-                          attrs: { type: "button" }
-                        },
-                        [_vm._v("x")]
-                      )
-                    ])
-                  ])
-                ])
+                  }),
+                  0
+                )
               ])
             ])
           ]
@@ -28514,7 +28555,6 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("jet-form-section", {
-    on: { submitted: _vm.updateProfileInformation },
     scopedSlots: _vm._u([
       {
         key: "form",
@@ -28539,37 +28579,95 @@ var render = function() {
                     _vm._v(" "),
                     _c("th", { attrs: { scope: "col" } }),
                     _vm._v(" "),
+                    _c("th", { attrs: { scope: "col" } }),
+                    _vm._v(" "),
                     _c("th", { attrs: { scope: "col" } })
                   ])
                 ]),
                 _vm._v(" "),
-                _c("tbody", [
-                  _c("tr", [
-                    _c("td", [_vm._v("dfgdf")]),
-                    _vm._v(" "),
-                    _c("td", [
-                      _c(
-                        "button",
-                        {
-                          staticClass: "btn btn-primary",
-                          attrs: { type: "button" }
-                        },
-                        [_vm._v("Edit")]
-                      )
-                    ]),
-                    _vm._v(" "),
-                    _c("td", [
-                      _c(
-                        "button",
-                        {
-                          staticClass: "btn btn-secondary",
-                          attrs: { type: "button" }
-                        },
-                        [_vm._v("x")]
-                      )
+                _c(
+                  "tbody",
+                  _vm._l(_vm.token, function(token, index) {
+                    return _c("tr", { key: index }, [
+                      _c("td", [
+                        !_vm.showEditToken
+                          ? _c("div", [_vm._v(_vm._s(token.access_key))])
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _vm.showEditToken
+                          ? _c(
+                              "div",
+                              [
+                                _c("jet-input", {
+                                  staticClass: "mt-1 block w-full",
+                                  attrs: { type: "text" },
+                                  model: {
+                                    value: _vm.newToken,
+                                    callback: function($$v) {
+                                      _vm.newToken = $$v
+                                    },
+                                    expression: "newToken"
+                                  }
+                                })
+                              ],
+                              1
+                            )
+                          : _vm._e()
+                      ]),
+                      _vm._v(" "),
+                      _c("td", [
+                        _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-primary",
+                            attrs: { type: "button" },
+                            on: {
+                              click: function($event) {
+                                return _vm.editToken(token.id)
+                              }
+                            }
+                          },
+                          [_vm._v("\n                Edit\n              ")]
+                        )
+                      ]),
+                      _vm._v(" "),
+                      _vm.showEditToken
+                        ? _c("td", [
+                            _c(
+                              "button",
+                              {
+                                staticClass: "btn btn-success",
+                                attrs: { type: "button" },
+                                on: {
+                                  click: function($event) {
+                                    return _vm.saveNewToken(token.id)
+                                  }
+                                }
+                              },
+                              [_vm._v("\n                Save\n              ")]
+                            )
+                          ])
+                        : _vm._e(),
+                      _vm._v(" "),
+                      _c("td", [
+                        _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-secondary",
+                            attrs: { type: "button" },
+                            on: {
+                              click: function($event) {
+                                return _vm.softDelete(token.id)
+                              }
+                            }
+                          },
+                          [_vm._v("\n                x\n              ")]
+                        )
+                      ])
                     ])
-                  ])
-                ])
+                  }),
+                  0
+                )
               ])
             ])
           ]

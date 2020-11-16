@@ -1,5 +1,5 @@
 <template>
-  <jet-form-section @submitted="updateProfileInformation">
+  <jet-form-section>
     <template #form>
       <div class="col-span-6 sm:col-span-4">
         <h1>Digital Ocean API Token</h1>
@@ -12,16 +12,47 @@
               <th style="width: 80%" scope="col">Token</th>
               <th scope="col"></th>
               <th scope="col"></th>
+              <th scope="col"></th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>dfgdf</td>
+            <tr v-for="(token, index) in token" :key="index">
               <td>
-                <button type="button" class="btn btn-primary">Edit</button>
+                <div v-if="!showEditToken">{{ token.access_key }}</div>
+                <div v-if="showEditToken">
+                  <jet-input
+                    type="text"
+                    class="mt-1 block w-full"
+                    v-model="newToken"
+                  ></jet-input>
+                </div>
               </td>
               <td>
-                <button type="button" class="btn btn-secondary">x</button>
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  @click="editToken(token.id)"
+                >
+                  Edit
+                </button>
+              </td>
+              <td v-if="showEditToken">
+                <button
+                  type="button"
+                  class="btn btn-success"
+                  @click="saveNewToken(token.id)"
+                >
+                  Save
+                </button>
+              </td>
+              <td>
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  @click="softDelete(token.id)"
+                >
+                  x
+                </button>
               </td>
             </tr>
           </tbody>
@@ -51,61 +82,55 @@ export default {
     JetSecondaryButton,
   },
 
-  props: ["user"],
+  mounted() {
+    this.getToken();
+  },
 
   data() {
     return {
-      form: this.$inertia.form(
-        {
-          _method: "PUT",
-          name: this.user.name,
-          email: this.user.email,
-          photo: null,
-        },
-        {
-          bag: "updateProfileInformation",
-          resetOnSuccess: false,
-        }
-      ),
-
-      photoPreview: null,
+      showEditToken: false,
+      token: '',
+      newToken: '',
     };
   },
 
   methods: {
-    updateProfileInformation() {
-      if (this.$refs.photo) {
-        this.form.photo = this.$refs.photo.files[0];
-      }
-
-      this.form.post(route("user-profile-information.update"), {
-        preserveScroll: true,
-      });
-    },
-
-    selectNewPhoto() {
-      this.$refs.photo.click();
-    },
-
-    updatePhotoPreview() {
-      const reader = new FileReader();
-
-      reader.onload = (e) => {
-        this.photoPreview = e.target.result;
-      };
-
-      reader.readAsDataURL(this.$refs.photo.files[0]);
-    },
-
-    deletePhoto() {
-      this.$inertia
-        .delete(route("current-user-photo.destroy"), {
-          preserveScroll: true,
+    getToken() {
+      axios
+        .get("/token")
+        .then((response) => {
+          const token = response.data;
+          this.token = token;
+          console.log("token from edit", token);
         })
-        .then(() => {
-          this.photoPreview = null;
-        });
+        .catch((error) => console.log(error));
     },
+
+    softDelete(index) {
+      axios
+        .get("/token-delete" + index)
+        .then((response) => {
+          console.log(index);
+        })
+        .catch((error) => console.log(error));
+        location.reload();
+    },
+
+    editToken() {
+      this.showEditToken = !this.showEditToken;
+    },
+
+    saveNewToken(index) {
+        var newToken = [this.newToken];
+        console.log(newToken)
+        axios
+        .post("/token-new" + index, newToken)
+        .then((response) => {
+          console.log(newToken);
+        })
+        .catch((error) => console.log("axios error", error));
+        location.reload();
+    }
   },
 };
 </script>

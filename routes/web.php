@@ -30,3 +30,10 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/user/dns-providers', func
 })->name('dns-providers');
 
 Route::middleware('auth:sanctum')->post('/addssh', 'App\Http\Controllers\SSHController@store');
+Route::middleware('auth:sanctum')->get('/keys', 'App\Http\Controllers\SSHController@index');
+Route::middleware('auth:sanctum')->get('/delete{index}', 'App\Http\Controllers\SSHController@destroy');
+
+Route::middleware('auth:sanctum')->post('/add-token', 'App\Http\Controllers\UserProviderController@store');
+Route::middleware('auth:sanctum')->get('/token', 'App\Http\Controllers\UserProviderController@show');
+Route::middleware('auth:sanctum')->get('/token-delete{index}', 'App\Http\Controllers\UserProviderController@destroy');
+Route::middleware('auth:sanctum')->post('/token-new{index}', 'App\Http\Controllers\UserProviderController@update');

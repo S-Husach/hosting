@@ -14,16 +14,10 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>dfgdf</td>
+            <tr v-for="(key, index) in keys" :key="index">
+              <td>{{ key.name }}</td>
               <td>
-                <button type="button" class="btn btn-secondary">x</button>
-              </td>
-            </tr>
-            <tr>
-              <td>ghrdsw</td>
-              <td>
-                <button type="button" class="btn btn-secondary">x</button>
+                <button type="button" class="btn btn-secondary" @click="softDelete(key.id)">x</button>
               </td>
             </tr>
           </tbody>
@@ -57,10 +51,35 @@ export default {
 
   data() {
     return {
+      keys: [],
     };
   },
 
+  mounted() {
+    this.getKeys();
+  },
+
   methods: {
+    getKeys() {
+      axios
+        .get("/keys")
+        .then((response) => {
+          const keys = response.data;
+          this.keys = keys;
+          console.log('keys', keys);
+        })
+        .catch((error) => console.log(error));
+    },
+
+    softDelete(index) {
+      axios
+          .get('/delete' + index)
+          .then((response) => {
+              console.log(index)
+          })
+          .catch((error) => console.log(error));
+          location.reload();
+    }
   },
 };
 </script>

@@ -5,10 +5,10 @@
     </template>
     <div>
       <sidebar/>
-      <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
+      <div v-if="!token.length" class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
         <add-token-form/>
       </div>
-      <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
+      <div v-if="token.length" :token="token" class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
         <token-edit-form/>
       </div>
     </div>
@@ -28,8 +28,6 @@ import AddTokenForm from './AddTokenForm';
 import TokenEditForm from './TokenEditForm';
 
 export default {
-  props: ["sessions"],
-
   components: {
     Sidebar,
     AppLayout,
@@ -42,5 +40,28 @@ export default {
     AddTokenForm,
     TokenEditForm,
   },
+
+  mounted() {
+    this.getToken();
+  },
+
+data() {
+    return {
+      token: '',
+    };
+  },
+
+  methods: {
+    getToken() {
+      axios
+        .get("/token")
+        .then((response) => {
+          const token = response.data;
+          this.token = token;
+          console.log('token', token);
+        })
+        .catch((error) => console.log(error));
+    },
+  }
 };
 </script>

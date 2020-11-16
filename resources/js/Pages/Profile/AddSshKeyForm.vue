@@ -11,7 +11,7 @@
           id="name"
           type="text"
           class="mt-1 block w-full"
-          v-model="name"
+          v-model="sshName"
         />
       </div>
 
@@ -51,23 +51,24 @@ export default {
 
   data() {
     return {
-      sshKey: [],
-      name: [],
+      sshKey: '',
+      sshName: '',
       sshData: [],
     };
   },
 
   methods: {
     submitForm() {
-      this.sshData = [this.name, this.sshKey]
-      console.log(this.sshData)
-      axios
-        .post("/addssh", this.sshKey)
+        var ssh = [this.sshName, this.sshKey];
+        //console.log(ssh)
+        axios
+        .post("/addssh", ssh)
         .then((response) => {
-          console.log("new vote added");
+          //console.log(ssh);
         })
         .catch((error) => console.log("axios error", error));
-    },
+        location.reload();
+   },
   },
 };
 </script>

@@ -3,10 +3,28 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Models\SSHKey;
+use App\Services\SSHKeyService;
+use App\Repositories\SSHKeyRepository;
+use App\Models\SSHKey;
 
 class SSHController extends Controller
 {
+    /**
+     * Construct repository and service
+     *
+     * @param \App\Services\SSHKeyService $sshKeyService
+     * @param \App\Repositories\SSHKeyRepository $sshKeyRepository
+     *
+     * @return void
+     */
+    public function __construct(
+        SSHKeyService $sshKeyService,
+        SSHKeyRepository $sshKeyRepository
+    ) {
+        $this->sshKeyService = $sshKeyService;
+        $this->sshKeyRepository = $sshKeyRepository;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +32,7 @@ class SSHController extends Controller
      */
     public function index()
     {
-        //
+        return $this->sshKeyService->formatKeyList();
     }
 
     /**
@@ -24,7 +42,7 @@ class SSHController extends Controller
      */
     public function create()
     {
-        //
+//
     }
 
     /**
@@ -35,11 +53,7 @@ class SSHController extends Controller
      */
     public function store(Request $request)
     {
-        SSHKey::create([
-            'user_id' => '1',
-            'name' => 'sone-name',
-            'key' => 'some-key',
-        ]);
+        $this->sshKeyService->submitProcessing($request);
     }
 
     /**
@@ -84,6 +98,6 @@ class SSHController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $this->sshKeyService->softDelete($id);
     }
 }
