@@ -1,65 +1,70 @@
 <template>
-  <jet-form-section>
-    <template #form>
-      <div class="col-span-6 sm:col-span-4">
+  <div>
+    <div class="shadow overflow-hidden sm:rounded-md">
+      <div class="m-4 col-span-6 sm:col-span-4">
         <h1>Digital Ocean API Token</h1>
       </div>
-      <!-- Name -->
-      <div class="col-span-6 sm:col-span-6">
-        <table class="table">
-          <thead class="thead-light">
-            <tr>
-              <th style="width: 80%" scope="col">Token</th>
-              <th scope="col"></th>
-              <th scope="col"></th>
-              <th scope="col"></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(token, index) in token" :key="index">
-              <td>
-                <div v-if="!showEditToken">{{ token.access_key }}</div>
-                <div v-if="showEditToken">
-                  <jet-input
-                    type="text"
-                    class="mt-1 block w-full"
-                    v-model="newToken"
-                  ></jet-input>
-                </div>
-              </td>
-              <td>
-                <button
-                  type="button"
-                  class="btn btn-primary"
-                  @click="editToken(token.id)"
-                >
-                  Edit
-                </button>
-              </td>
-              <td v-if="showEditToken">
-                <button
-                  type="button"
-                  class="btn btn-success"
-                  @click="saveNewToken(token.id)"
-                >
-                  Save
-                </button>
-              </td>
-              <td>
-                <button
-                  type="button"
-                  class="btn btn-secondary"
-                  @click="softDelete(token.id)"
-                >
-                  x
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="px-4 py-5 bg-white sm:p-6">
+        <div class="grid grid-cols-6 gap-6">
+          <div class="col-span-6 sm:col-span-6">
+            <div class="col-span-6 sm:col-span-6">
+            <table class="table">
+            <thead class="thead-light">
+                <tr>
+                <th style="width: 90%" scope="col">Token</th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(token, index) in token" :key="index">
+                <td>
+                    <div v-if="!showEditToken">{{ token.access_key }}</div>
+                    <div v-if="showEditToken">
+                    <jet-input
+                        type="text"
+                        class="mt-1 block w-full"
+                        v-model="newToken"
+                    ></jet-input>
+                    </div>
+                </td>
+                <td>
+                    <button
+                    type="button"
+                    class="btn btn-primary"
+                    @click="editToken(token.id)"
+                    >
+                    Edit
+                    </button>
+                </td>
+                <td v-if="showEditToken">
+                    <button
+                    type="button"
+                    class="btn btn-success"
+                    @click="saveNewToken(token.id)"
+                    >
+                    Save
+                    </button>
+                </td>
+                <td>
+                    <button
+                    type="button"
+                    class="btn btn-secondary"
+                    @click="softDelete(token.id)"
+                    >
+                    x
+                    </button>
+                </td>
+                </tr>
+            </tbody>
+            </table>
+            </div>
+          </div>
+        </div>
       </div>
-    </template>
-  </jet-form-section>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -101,7 +106,8 @@ export default {
         .then((response) => {
           const token = response.data;
           this.token = token;
-          console.log("token from edit", token);
+          this.newToken = token[0].access_key;
+        //   console.log("token from edit", token);
         })
         .catch((error) => console.log(error));
     },
@@ -110,27 +116,29 @@ export default {
       axios
         .get("/token-delete" + index)
         .then((response) => {
-          console.log(index);
+        //   console.log(index);
         })
         .catch((error) => console.log(error));
-        location.reload();
+      location.reload();
     },
 
     editToken() {
       this.showEditToken = !this.showEditToken;
+    //   var newToken = [this.token[0].access_key];
+    //   console.log(newToken);
     },
 
     saveNewToken(index) {
-        var newToken = [this.newToken];
-        console.log(newToken)
-        axios
+      var newToken = [this.newToken];
+      console.log(newToken);
+      axios
         .post("/token-new" + index, newToken)
         .then((response) => {
           console.log(newToken);
         })
         .catch((error) => console.log("axios error", error));
-        location.reload();
-    }
+      location.reload();
+    },
   },
 };
 </script>

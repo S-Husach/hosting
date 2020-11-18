@@ -1,23 +1,27 @@
 <template>
   <div>
     <form>
-      <div class="col-span-6 sm:col-span-5">
-        <h1>Add Digital Ocean Account Token</h1>
-      </div>
-      <!-- Name -->
-      <div class="col-span-6 sm:col-span-4">
-        <jet-label value="Token" />
-        <jet-input
-          type="text"
-          class="mt-1 mb-10 block w-full"
-          v-model="token"
-        />
+      <div class="shadow overflow-hidden sm:rounded-md">
+        <div class="m-4 col-span-6 sm:col-span-4">
+          <h1>Add Digital Ocean Account Token</h1>
+        </div>
+        <div class="px-4 py-5 bg-white sm:p-6">
+          <div class="grid grid-cols-6 gap-6">
+            <div class="col-span-6 sm:col-span-4">
+              <jet-label value="Token" />
+              <jet-input
+                type="text"
+                class="mt-1 mb-10 block w-full"
+                v-model="token"
+              />
+            </div>
+          </div>
+          <button type="button" class="btn btn-primary" @click="submitForm">
+            Create
+          </button>
+        </div>
       </div>
     </form>
-
-    <button type="button" class="btn btn-secondary" @click="submitForm">
-      Create
-    </button>
   </div>
 </template>
 
@@ -43,7 +47,7 @@ export default {
 
   data() {
     return {
-      token: '',
+      token: "",
     };
   },
 
@@ -54,10 +58,10 @@ export default {
       axios
         .post("/add-token", token)
         .then((response) => {
-          console.log('then', token);
+          console.log("then", token);
         })
         .catch((error) => console.log("axios error", error));
-        location.reload();
+      location.reload();
     },
   },
 };

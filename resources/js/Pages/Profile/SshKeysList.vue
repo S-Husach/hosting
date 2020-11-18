@@ -1,30 +1,33 @@
 <template>
-  <jet-form-section>
-    <template #form>
-      <div class="col-span-6 sm:col-span-4">
+  <div>
+    <div class="shadow overflow-hidden sm:rounded-md">
+      <div class="m-4 col-span-6 sm:col-span-4">
         <h1>SSH Keys</h1>
       </div>
-      <!-- Name -->
-      <div class="col-span-6 sm:col-span-6">
-        <table class="table">
-          <thead class="thead-light">
-            <tr>
-              <th style="width: 90%" scope="col">Name</th>
-              <th scope="col"></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(key, index) in keys" :key="index">
-              <td>{{ key.name }}</td>
-              <td>
-                <button type="button" class="btn btn-secondary" @click="softDelete(key.id)">x</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="px-4 py-5 bg-white sm:p-6">
+        <div class="grid grid-cols-6 gap-6">
+          <div class="col-span-6 sm:col-span-6">
+            <table class="table">
+            <thead class="thead-light">
+                <tr>
+                <th style="width: 92%" scope="col">Name</th>
+                <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(key, index) in keys" :key="index">
+                <td>{{ key.name }}</td>
+                <td>
+                    <button type="button" class="btn btn-secondary" @click="softDelete(key.id)">x</button>
+                </td>
+                </tr>
+            </tbody>
+            </table>
+          </div>
+        </div>
       </div>
-    </template>
-  </jet-form-section>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -66,20 +69,20 @@ export default {
         .then((response) => {
           const keys = response.data;
           this.keys = keys;
-          console.log('keys', keys);
+          console.log("keys", keys);
         })
         .catch((error) => console.log(error));
     },
 
     softDelete(index) {
       axios
-          .get('/delete' + index)
-          .then((response) => {
-              console.log(index)
-          })
-          .catch((error) => console.log(error));
-          location.reload();
-    }
+        .get("/delete" + index)
+        .then((response) => {
+          console.log(index);
+        })
+        .catch((error) => console.log(error));
+      location.reload();
+    },
   },
 };
 </script>

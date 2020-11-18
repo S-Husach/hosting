@@ -21,7 +21,12 @@
               >Name</label
             >
             <div class="col-sm-4">
-              <input type="" class="form-control" placeholder="Server name" />
+              <input
+                type=""
+                class="form-control"
+                placeholder="Server name"
+                v-model="name"
+              />
             </div>
           </div>
 
@@ -30,10 +35,11 @@
               >Server Plan</label
             >
             <div class="col-sm-4">
-              <select class="form-control">
-                <option>2GB RAM, 50GB Disk, 1 Cores, 10$/M</option>
-                <option>4GB RAM, 100GB Disk, 2 Cores, 20$/M</option>
-                <option>8GB RAM, 250GB Disk, 2 Cores, 50$/M</option>
+              <select class="form-control" v-model="selectedPlan">
+                <option v-for="(plan, index) in plans" :key="index">
+                  {{ index }} {{ plan.memory }}MB RAM, {{ plan.disk }}GB Disk, {{plan.vcpus}} Cores,
+                  {{ plan.priceMonthly }}$/M
+                </option>
               </select>
             </div>
           </div>
@@ -43,10 +49,10 @@
               >Available Regions</label
             >
             <div class="col-sm-4">
-              <select class="form-control">
-                <option>New York 1</option>
-                <option>San Francisco 2</option>
-                <option>Los Angeles 3</option>
+              <select class="form-control" v-model="selectedRegion">
+                <option v-for="(region, index) in regions" :key="index">
+                  {{ index }} {{ region.name }}
+                </option>
               </select>
             </div>
           </div>
@@ -61,11 +67,18 @@
                 readonly
                 class="form-control-plaintext"
                 value="Ubuntu 18.04 x64"
+                v-model="ubuntu"
               />
             </div>
           </div>
 
-          <button type="submit" class="btn btn-primary">Create server</button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            @click="submitServerForm"
+          >
+            Create server
+          </button>
         </form>
       </div>
     </div>
@@ -78,6 +91,94 @@ import JetApplicationLogo from "@/Jetstream/ApplicationLogo";
 export default {
   components: {
     JetApplicationLogo,
+  },
+
+  data() {
+    return {
+      name: "",
+      selectedPlan: "",
+      selectedRegion: "",
+      ubuntu: "ubuntu-18-04-x64",
+      regions: "",
+      plans: "",
+    };
+  },
+
+  mounted() {
+    this.getRegions();
+    this.getPlans();
+    this.getServers();
+  },
+
+  methods: {
+    getRegions() {
+      axios
+        .get("/api/regions")
+        .then((response) => {
+          const regions = response.data;
+          this.regions = regions;
+          console.log("regions", regions);
+        })
+        .catch((error) => console.log(error));
+    },
+
+    getPlans() {
+      axios
+        .get("/api/plans")
+        .then((response) => {
+          const plans = response.data;
+          this.plans = plans;
+          console.log("plans", plans);
+        })
+        .catch((error) => console.log(error));
+    },
+
+    getServers() {
+      axios
+        .get("/api/servers")
+        .then((response) => {
+          const servers = response.data;
+          this.servers = servers;
+          console.log("servers", servers);
+        })
+        .catch((error) => console.log(error));
+    },
+
+    submitServerForm() {
+      var serverData = [
+        this.name,
+        this.selectedPlan,
+        this.selectedRegion,
+        this.ubuntu,
+      ];
+      console.log(serverData);
+      axios
+        .post("/add-server", serverData)
+        .then((response) => {
+          //console.log(ssh);
+        })
+        .catch((error) => console.log("axios error", error));
+
+        // API
+
+        // console.log('testData', this.selectedRegion);
+        // console.log('plan', this.plans[this.selectedPlan[0]].slug);
+        // console.log('region', this.regions[this.selectedRegion[0]].slug);
+
+        var serverDataAPI = [
+        this.name,
+        this.plans[this.selectedPlan[0]].slug,
+        this.regions[this.selectedRegion[0]].slug,
+        this.ubuntu,
+      ];
+      console.log(serverDataAPI);
+      axios
+        .post("/api/add-server", serverDataAPI)
+        .then((response) => {
+        })
+        .catch((error) => console.log("axios error", error));
+      location.reload();
+    },
   },
 };
 </script>

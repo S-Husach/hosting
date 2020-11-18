@@ -17,7 +17,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
+            <tr v-for="(server, index) in servers" :key="index">
               <td>
                 <p>
                 <img
@@ -28,29 +28,12 @@
                   width="25px"
                   length="auto"
                 />
-                server1</p>
+                {{ server.name}}</p>
               </td>
-              <td>64.227.22.46</td>
-              <td>New York 1</td>
+              <td>{{ server.IP }}</td>
+              <td>{{ server.region }}</td>
               <td>Active</td>
-              <td><button type="button" class="btn btn-danger">x</button></td>
-            </tr>
-            <tr>
-              <td>
-                <img
-                  class="mx-2"
-                  align="left"
-                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/DigitalOcean_logo.svg/1200px-DigitalOcean_logo.svg.png"
-                  alt="Provider Logo"
-                  width="25px"
-                  length="auto"
-                />
-                server2
-              </td>
-              <td>138.197.205.178</td>
-              <td>San Francisco 2</td>
-              <td>Active</td>
-              <td><button type="button" class="btn btn-danger">x</button></td>
+              <td><button type="button" class="btn btn-danger" @click="softDelete(server.id)">x</button></td>
             </tr>
           </tbody>
         </table>
@@ -61,10 +44,44 @@
 
 <script>
 import JetApplicationLogo from "@/Jetstream/ApplicationLogo";
+import Paginate from 'vuejs-paginate'
 
 export default {
   components: {
     JetApplicationLogo,
+    Paginate,
+  },
+  data() {
+    return {
+      servers: [],
+    };
+  },
+
+  mounted() {
+    this.getKeys();
+  },
+
+  methods: {
+    getKeys() {
+      axios
+        .get("/servers")
+        .then((response) => {
+          const servers = response.data;
+          this.servers = servers;
+        //   console.log("servers", servers);
+        })
+        .catch((error) => console.log(error));
+    },
+
+    softDelete(id) {
+      axios
+        .get("/server-delete" + id)
+        .then((response) => {
+          console.log(index);
+        })
+        .catch((error) => console.log(error));
+        location.reload();
+    },
   },
 };
 </script>

@@ -37,3 +37,7 @@ Route::middleware('auth:sanctum')->post('/add-token', 'App\Http\Controllers\User
 Route::middleware('auth:sanctum')->get('/token', 'App\Http\Controllers\UserProviderController@show');
 Route::middleware('auth:sanctum')->get('/token-delete{index}', 'App\Http\Controllers\UserProviderController@destroy');
 Route::middleware('auth:sanctum')->post('/token-new{index}', 'App\Http\Controllers\UserProviderController@update');
+
+Route::middleware('auth:sanctum')->post('/add-server', 'App\Http\Controllers\ServerController@store');
+Route::middleware('auth:sanctum')->get('/servers', 'App\Http\Controllers\ServerController@index');
+Route::middleware('auth:sanctum')->get('/server-delete{index}', 'App\Http\Controllers\ServerController@destroy');

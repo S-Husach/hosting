@@ -17,3 +17,8 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get('/regions', 'App\Http\Controllers\ServerController@getRegions');
+Route::get('/plans', 'App\Http\Controllers\ServerController@getPlans');
+Route::get('/servers', 'App\Http\Controllers\ServerController@getServers');
+Route::post('/add-server', 'App\Http\Controllers\ServerController@createServer');
